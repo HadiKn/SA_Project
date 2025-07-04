@@ -8,8 +8,8 @@ from .models import Like
 from .serializers import LikeSerializer
 from posts.models import Post
 
-# Create your views here.
 
+# list all likes
 class LikeListView(generics.ListAPIView):
     serializer_class = LikeSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -17,6 +17,7 @@ class LikeListView(generics.ListAPIView):
     def get_queryset(self):
         return Like.objects.all().order_by('-created_at')
 
+# list likes for a certain post
 class PostLikeListView(generics.ListAPIView):
     serializer_class = LikeSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -25,6 +26,7 @@ class PostLikeListView(generics.ListAPIView):
         post_id = self.kwargs.get('post_id')
         return Like.objects.filter(post_id=post_id).order_by('-created_at')
 
+# like a post
 class LikeCreateView(generics.CreateAPIView):
     serializer_class = LikeSerializer
     permission_classes = [IsAuthenticated]
@@ -39,6 +41,8 @@ class LikeCreateView(generics.CreateAPIView):
             
         serializer.save(user=self.request.user, post=post)
 
+
+# unlike
 class LikeDeleteView(generics.DestroyAPIView):
     serializer_class = LikeSerializer
     permission_classes = [IsAuthenticated]
@@ -50,6 +54,7 @@ class LikeDeleteView(generics.DestroyAPIView):
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+# list my liked posts
 class UserLikesView(generics.ListAPIView):
     serializer_class = LikeSerializer
     permission_classes = [IsAuthenticated]

@@ -7,13 +7,14 @@ from .models import Comment
 from .serializers import CommentSerializer
 from posts.models import Post
 
+# list all comments
 class CommentListView(generics.ListAPIView):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     
     def get_queryset(self):
         return Comment.objects.all().order_by('-created_at')
-
+# list comments for a certain post
 class PostCommentListView(generics.ListAPIView):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -22,6 +23,7 @@ class PostCommentListView(generics.ListAPIView):
         post_id = self.kwargs.get('post_id')
         return Comment.objects.filter(post_id=post_id).order_by('-created_at')
 
+# comment on a post
 class CommentCreateView(generics.CreateAPIView):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]      
@@ -31,6 +33,7 @@ class CommentCreateView(generics.CreateAPIView):
         post = get_object_or_404(Post, id=post_id)
         serializer.save(user=self.request.user, post=post)
 
+# modify a comment or delete it
 class CommentRetrieveView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]  
